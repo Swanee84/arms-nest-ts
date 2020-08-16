@@ -13,3 +13,17 @@ export default abstract class BasicEntity extends BaseEntity {
   @UpdateDateColumn()
   updatedAt?: Date // 수정 일시
 }
+
+export interface IBasic {
+  status?: string
+  createdId?: number
+  updatedId?: number
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+export interface IBasicSearch {
+  current: number
+  pageSize: number
+  status: string
+}

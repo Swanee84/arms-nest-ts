@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm'
-import BasicEntity from '../common/basic.entity'
+import BasicEntity, { IBasicSearch } from '../common/basic.entity'
 import BranchEntity from '../branch/branch.entity'
 import UserEntity from '../user/user.entity'
 
@@ -27,7 +27,7 @@ export default class AcademyEntity extends BasicEntity {
   incorporation?: string // 학원 설립일
 
   @OneToMany((type) => BranchEntity, (branch) => branch.academy)
-  // @JoinColumn({ referencedColumnName: 'academy_id' })
+  // @JoinColumn({ name: 'id', referencedColumnName: 'academy_id' })
   branchList!: BranchEntity[]
 
   @OneToOne((type) => UserEntity)
@@ -35,21 +35,14 @@ export default class AcademyEntity extends BasicEntity {
   user!: UserEntity
 }
 
-export class SearchAcademy {
+export interface SearchAcademy extends IBasicSearch {
   id?: number
   name?: string
   userId?: number
-  _address?: string
+  address?: string
   corporateNo?: string
   phoneNo?: string
   incorporation?: string
   incorporationStart?: string
   incorporationEnd?: string
-
-  current: number
-  pageSize: number
-
-  get address(): string {
-    return `%${this._address}%`
-  }
 }

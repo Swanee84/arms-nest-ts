@@ -1,7 +1,7 @@
 const SnakeNamingStrategy = require('typeorm-naming-strategies').SnakeNamingStrategy
 module.exports = {
   type: 'mariadb',
-  host: 'swanee.synology.me',
+  host: 'swaneeriver.iptime.org',
   port: 3307,
   username: 'swanee',
   password: 'Park1984#!',

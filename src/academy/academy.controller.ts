@@ -1,7 +1,8 @@
-import { Get, Post, Body, Put, Delete, Query, Param, Controller } from '@nestjs/common'
+import { Get, Post, Body, Delete, Query, Param, Controller, Patch } from '@nestjs/common'
 import { AcademyService } from './academy.service'
 import AcademyEntity, { SearchAcademy } from './academy.entity'
 import { StandardResponse } from '../common/response.interface'
+import Auth from '../auth/auth.decorator'
 
 @Controller('academy')
 export class AcademyController {
@@ -12,8 +13,28 @@ export class AcademyController {
     return await this.academyService.findAll(query)
   }
 
-  @Get(':academyId')
-  async findOne(@Param() params): Promise<StandardResponse<AcademyEntity>> {
-    return await this.academyService.findOne(params.academyId)
+  @Get(':id')
+  async findOne(@Param() params: SearchAcademy): Promise<StandardResponse<AcademyEntity>> {
+    return await this.academyService.findOne(params.id)
+  }
+
+  @Post()
+  async create(@Auth('id') userId: number, @Body('data') academyData: AcademyEntity): Promise<AcademyEntity> {
+    academyData.createdId = userId
+    const result = await this.academyService.create(academyData)
+    return Promise.resolve(result)
+  }
+
+  @Patch(':id')
+  async update(@Auth('id') userId: number, @Param() params: SearchAcademy, @Body('data') academyData: AcademyEntity): Promise<AcademyEntity> {
+    academyData.updatedId = userId
+    const result = await this.academyService.update(params.id, academyData)
+    return Promise.resolve(result)
+  }
+
+  @Delete(':id')
+  async delete(@Param() params: SearchAcademy): Promise<AcademyEntity> {
+    const result = await this.academyService.delete(params.id)
+    return Promise.resolve(result)
   }
 }

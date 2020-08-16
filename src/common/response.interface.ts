@@ -3,21 +3,37 @@ class BaseResponse {
   status: number
   code?: string
   success: boolean
-  constructor() {
-    this.status = 200
-    this.success = true
+
+  constructor()
+  constructor(_message?: string, _code?: string)
+  constructor(_message?: string, _code?: string, _status?: number, _success?: boolean) {
+    this.status = _status ?? 200
+    this.success = _success ?? true
+    this.message = _message
+    this.code = _code
   }
+
+  // constructor(initValue: { status?: number; success?: boolean; message?: string; code?: string }) {
+  //   this.status = initValue.status ?? 200
+  //   this.success = initValue.success ?? true
+  //   this.message = initValue.message
+  //   this.code = initValue.code
+  // }
 }
 
 export class StandardResponse<T> extends BaseResponse {
-  result?: T
-  list?: T[]
+  data?: T
+  dataList?: T[]
 
-  constructor(_result?: T, _list?: T[]) {
+  constructor(initValue: { data?: T; dataList?: T[] }) {
     super()
-    this.result = _result
-    this.list = _list
+    this.data = initValue.data
+    this.dataList = initValue.dataList
   }
+  // constructor(_list?: string) {
+  //   super()
+  //   this.list = _list
+  // }
 }
 
 export class PagingResponse<T> extends BaseResponse {

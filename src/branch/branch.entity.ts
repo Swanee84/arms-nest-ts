@@ -1,5 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm'
-import BasicEntity from '../common/basic.entity'
+import BasicEntity, { IBasicSearch } from '../common/basic.entity'
 import AcademyEntity from '../academy/academy.entity'
 import { OneToOne } from 'typeorm/index'
 import UserEntity from '../user/user.entity'
@@ -34,4 +34,14 @@ export default class BranchEntity extends BasicEntity {
   @OneToOne((type) => UserEntity)
   @JoinColumn({ name: 'user_id' })
   user!: UserEntity
+}
+
+export interface SearchBranch extends IBasicSearch {
+  id?: number
+  academyId?: number
+  name?: string
+  userId?: number
+  incorporation?: string
+  address?: string
+  phoneNo: string
 }
