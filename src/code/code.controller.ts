@@ -3,6 +3,7 @@ import { StandardResponse } from '../common/response.interface'
 import Auth from '../auth/auth.decorator'
 import { CodeService } from './code.service'
 import { CodeDetailEntity, CodeGroupEntity, SearchCode } from './code.entity'
+import { IUser } from '../user/user.entity'
 
 @Controller('code')
 export class CodeController {
@@ -14,14 +15,18 @@ export class CodeController {
   }
 
   @Post('group')
-  async createGroup(@Auth('id') userId: number, @Body('data') codeDetailData: CodeGroupEntity): Promise<CodeGroupEntity> {
+  async createGroup(@Auth({ key: 'id', roles: ['ADMIN', 'MANAGER'] }) userId: number, @Body() codeDetailData: CodeGroupEntity): Promise<CodeGroupEntity> {
     codeDetailData.createdId = userId
     const result = await this.codeService.createGroup(codeDetailData)
     return Promise.resolve(result)
   }
 
   @Patch('group/:groupCodeId')
-  async updateGroup(@Auth('id') userId: number, @Param() params: SearchCode, @Body('data') codeDetailData: CodeGroupEntity): Promise<CodeGroupEntity> {
+  async updateGroup(
+    @Auth({ key: 'id', roles: ['ADMIN'] }) userId: number,
+    @Param() params: SearchCode,
+    @Body() codeDetailData: CodeGroupEntity
+  ): Promise<CodeGroupEntity> {
     codeDetailData.updatedId = userId
     const result = await this.codeService.updateGroup(params.groupCodeId, codeDetailData)
     return Promise.resolve(result)
@@ -39,14 +44,18 @@ export class CodeController {
   }
 
   @Post('detail')
-  async createDetail(@Auth('id') userId: number, @Body('data') codeDetailData: CodeDetailEntity): Promise<CodeDetailEntity> {
+  async createDetail(@Auth({ key: 'id', roles: ['ADMIN'] }) userId: number, @Body() codeDetailData: CodeDetailEntity): Promise<CodeDetailEntity> {
     codeDetailData.createdId = userId
     const result = await this.codeService.createDetail(codeDetailData)
     return Promise.resolve(result)
   }
 
   @Patch('detail/:detailCodeId')
-  async updateDetail(@Auth('id') userId: number, @Param() params: SearchCode, @Body('data') codeDetailData: CodeDetailEntity): Promise<CodeDetailEntity> {
+  async updateDetail(
+    @Auth({ key: 'id', roles: ['ADMIN'] }) userId: number,
+    @Param() params: SearchCode,
+    @Body() codeDetailData: CodeDetailEntity
+  ): Promise<CodeDetailEntity> {
     codeDetailData.updatedId = userId
     const result = await this.codeService.updateDetail(params.detailCodeId, codeDetailData)
     return Promise.resolve(result)

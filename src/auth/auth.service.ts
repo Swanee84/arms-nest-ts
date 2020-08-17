@@ -1,22 +1,19 @@
 import { Injectable } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { Repository, getRepository, DeleteResult } from 'typeorm'
 import UserEntity, { IUser } from '../user/user.entity'
-import jwt from 'jsonwebtoken'
+import { sign } from 'jsonwebtoken'
 import { SECRET } from '../config'
 import { HttpException } from '@nestjs/common/exceptions/http.exception'
-import { HttpStatus } from '@nestjs/common'
 import * as argon2 from 'argon2'
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>
-  ) {}
+  // constructor(
+  //   @InjectRepository(UserEntity)
+  //   private readonly userRepository: Repository<UserEntity>
+  // ) {}
 
-  async findOne(email: string, password: string): Promise<IUser> {
-    const user = await this.userRepository.findOne({ email })
+  async signIn(email: string, password: string): Promise<IUser> {
+    const user = await UserEntity.findOne({ email })
     if (!user) {
       return null
     }
@@ -29,7 +26,7 @@ export class AuthService {
   }
 
   async findById(id: number): Promise<IUser> {
-    const user = await this.userRepository.findOne(id)
+    const user = await UserEntity.findOne(id)
 
     if (!user) {
       const errors = { User: ' not found' }
@@ -40,7 +37,7 @@ export class AuthService {
   }
 
   async findByIdFromRedis(id: number): Promise<IUser> {
-    const user = await this.userRepository.findOne(id) // redis 로 변경해야 한다.
+    const user = await UserEntity.findOne(id) // redis 로 변경해야 한다.
 
     if (!user) {
       const errors = { User: ' not found' }
@@ -48,5 +45,25 @@ export class AuthService {
     }
 
     return user.getInterface()
+  }
+
+  public generateToken(user: IUser) {
+    // const today = new Date()
+    // const exp = new Date(today)
+    // exp.setDate(today.getDate() + 60)
+    const payload = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    }
+    try {
+      const token: string = sign(payload, SECRET, { expiresIn: 60 * 60 * 24 })
+      console.log('generated token : ', token)
+      return token
+    } catch (e) {
+      console.log(e)
+    }
+    return null
   }
 }

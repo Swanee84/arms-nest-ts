@@ -28,7 +28,10 @@ export class CodeService {
   }
 
   async createGroup(data: CodeGroupEntity): Promise<CodeGroupEntity> {
-    const createdData = await data.save()
+    const groupCode = new CodeGroupEntity()
+    Object.assign(groupCode, data)
+
+    const createdData = await groupCode.save()
     console.log('createdData >>', createdData)
     return createdData
   }

@@ -19,14 +19,14 @@ export class BranchController {
   }
 
   @Post()
-  async create(@Auth('id') userId: number, @Body('data') academyData: BranchEntity): Promise<BranchEntity> {
+  async create(@Auth({ key: 'id', roles: ['ADMIN'] }) userId: number, @Body() academyData: BranchEntity): Promise<BranchEntity> {
     academyData.createdId = userId
     const result = await this.branchService.create(academyData)
     return Promise.resolve(result)
   }
 
   @Patch(':id')
-  async update(@Auth('id') userId: number, @Param() params: SearchBranch, @Body('data') academyData: BranchEntity): Promise<BranchEntity> {
+  async update(@Auth({ key: 'id', roles: ['ADMIN'] }) userId: number, @Param() params: SearchBranch, @Body() academyData: BranchEntity): Promise<BranchEntity> {
     academyData.updatedId = userId
     const result = await this.branchService.update(params.id, academyData)
     return Promise.resolve(result)

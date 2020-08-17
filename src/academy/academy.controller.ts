@@ -19,14 +19,18 @@ export class AcademyController {
   }
 
   @Post()
-  async create(@Auth('id') userId: number, @Body('data') academyData: AcademyEntity): Promise<AcademyEntity> {
+  async create(@Auth({ key: 'id', roles: ['ADMIN'] }) userId: number, @Body() academyData: AcademyEntity): Promise<AcademyEntity> {
     academyData.createdId = userId
     const result = await this.academyService.create(academyData)
     return Promise.resolve(result)
   }
 
   @Patch(':id')
-  async update(@Auth('id') userId: number, @Param() params: SearchAcademy, @Body('data') academyData: AcademyEntity): Promise<AcademyEntity> {
+  async update(
+    @Auth({ key: 'id', roles: ['ADMIN'] }) userId: number,
+    @Param() params: SearchAcademy,
+    @Body() academyData: AcademyEntity
+  ): Promise<AcademyEntity> {
     academyData.updatedId = userId
     const result = await this.academyService.update(params.id, academyData)
     return Promise.resolve(result)
