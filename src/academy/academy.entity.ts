@@ -1,30 +1,34 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn } from 'typeorm'
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, OneToOne, JoinColumn, Index } from 'typeorm'
 import BasicEntity, { IBasicSearch } from '../common/basic.entity'
 import BranchEntity from '../branch/branch.entity'
 import UserEntity from '../user/user.entity'
 
 @Entity('academy')
 export default class AcademyEntity extends BasicEntity {
-  @PrimaryGeneratedColumn()
-  id!: number // 학원 계정
+  @PrimaryGeneratedColumn({ type: 'int', comment: '학원 계정' })
+  id!: number
 
-  @Column()
+  @Column({ type: 'varchar', length: 50, nullable: false, comment: '이름' })
+  @Index()
   name!: string // 이름
 
-  @Column()
+  @Column({ type: 'int', nullable: false, comment: '학원 원장 사용자 계정' })
+  @Index()
   userId!: number // 학원 원장 사용자 계정
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: true, comment: '주소' })
   address?: string // 주소
 
-  @Column()
+  @Column({ type: 'varchar', length: 16, nullable: false, comment: '사업자 번호' })
+  @Index()
   corporateNo?: string // 사업자 번호
 
-  @Column()
+  @Column({ type: 'varchar', length: 16, nullable: false, comment: '학원 폰 번호' })
+  @Index()
   phoneNo?: string // 학원 폰 번호
 
-  @Column()
-  incorporation?: string // 학원 설립일
+  @Column({ type: 'date', nullable: true, comment: '학원 설립일' })
+  incorporation?: Date // 학원 설립일
 
   @OneToMany((type) => BranchEntity, (branch) => branch.academy)
   // @JoinColumn({ name: 'id', referencedColumnName: 'academy_id' })

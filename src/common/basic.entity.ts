@@ -1,17 +1,18 @@
-import { Column, CreateDateColumn, UpdateDateColumn, BaseEntity } from 'typeorm'
+import { Column, CreateDateColumn, UpdateDateColumn, BaseEntity, Index } from 'typeorm'
 
 export default abstract class BasicEntity extends BaseEntity {
-  @Column()
-  status!: string // 상태
-  @Column()
-  createdId?: number // 등록 계정
-  @Column()
-  updatedId?: number // 수정 계정
+  @Column({ type: 'varchar', length: 16, nullable: true, comment: '상태' })
+  status!: string
+  @Column({ type: 'int', nullable: true, comment: '등록 계정' })
+  createdId?: number
+  @Column({ type: 'int', nullable: true, comment: '수정 계정' })
+  updatedId?: number
 
-  @CreateDateColumn()
-  createdAt?: Date // 등록 일시
-  @UpdateDateColumn()
-  updatedAt?: Date // 수정 일시
+  @CreateDateColumn({ type: 'datetime', nullable: true, comment: '등록 일시' })
+  @Index()
+  createdAt?: Date
+  @UpdateDateColumn({ type: 'datetime', nullable: true, comment: '수정 일시' })
+  updatedAt?: Date
 }
 
 export interface IBasic {

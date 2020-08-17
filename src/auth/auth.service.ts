@@ -4,6 +4,7 @@ import { sign } from 'jsonwebtoken'
 import { SECRET } from '../config'
 import { HttpException } from '@nestjs/common/exceptions/http.exception'
 import * as argon2 from 'argon2'
+import { SignLog } from '../user/signlog.entity'
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,9 @@ export class AuthService {
     }
 
     if (await argon2.verify(user.password, password)) {
+      const signLog = new SignLog()
+      signLog.userId = user.id
+      signLog.save()
       return user.getInterface()
     }
 

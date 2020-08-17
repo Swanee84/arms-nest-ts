@@ -44,7 +44,9 @@ export class AcademyService {
   }
 
   async create(data: AcademyEntity): Promise<AcademyEntity> {
-    const createdData = await data.save()
+    const academy = new AcademyEntity()
+    Object.assign(academy, data)
+    const createdData = await academy.save()
     console.log('createdData >>', createdData)
     return createdData
   }

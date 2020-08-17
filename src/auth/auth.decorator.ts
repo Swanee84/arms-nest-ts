@@ -22,7 +22,7 @@ const Auth = createParamDecorator((data: RoleCheck, ctx: ExecutionContext) => {
   const token = req.headers.authorization
   if (token) {
     const decoded: any = jwt.verify(token, SECRET)
-    if (!roles || roles.indexOf(req.decodedUser.role) > -1) {
+    if (!roles || roles.indexOf(decoded.role) > -1) {
       return !!key ? decoded[key] : decoded
     }
   }
