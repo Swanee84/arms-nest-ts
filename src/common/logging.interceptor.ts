@@ -1,12 +1,21 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common'
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common'
 import { Observable } from 'rxjs'
 import { tap } from 'rxjs/operators'
-import LoggingSchema from './logging.schema'
+import { LoggingModel } from './logging.schema'
+import * as mongoose from 'mongoose'
 
+mongoose
+  .connect('mongodb://swanee:Park1984#!@swaneeriver.iptime.org:27017/arms_log?retryWrites=true&w=majority', {
+    useNewUrlParser: true,
+    autoIndex: false,
+  })
+  .catch((err) => {
+    console.log('mongoDB connect err >>', err)
+    return null
+  })
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    console.log('Before...')
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest()
 
     const method = request.method
@@ -15,14 +24,32 @@ export class LoggingInterceptor implements NestInterceptor {
     const body = request.body
     const query = request.query
 
-    console.log(`>> ${method}: ${url}`)
-    console.log('params >>', params)
-    console.log('body >>', body)
-    console.log('query >>', query)
-
-    // const logging = new LoggingSchema()
+    const logging = new LoggingModel({ method, url, params, body, query })
+    await logging.save()
 
     const now = Date.now()
-    return next.handle().pipe(tap(() => console.log(`After... ${Date.now() - now}ms`)))
+    return next.handle().pipe(
+      tap(
+        (x) => {
+          console.log('interceptor X : ', x)
+          logging.processTime = Date.now() - now
+          logging.status = x.status
+          logging.success = x.success
+          logging.message = x.message
+          logging.save()
+        },
+        (e) => {
+          console.log('interceptor E : ', e)
+          logging.processTime = Date.now() - now
+          logging.status = e.status
+          logging.success = false
+          logging.message = e.message
+          if (e.status >= 500) {
+            logging.stack = e.stack
+          }
+          logging.save()
+        }
+      )
+    )
   }
 }

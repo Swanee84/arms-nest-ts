@@ -6,8 +6,8 @@ module.exports = {
   username: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_DATA,
-  synchronize: process.env.DB_SYNC,
-  logging: process.env.DB_LOGGIN,
+  synchronize: false,
+  logging: true,
   entities: ['dist/**/**.entity{.ts,.js}'],
   cli: {
     entitiesDir: 'src/entity',

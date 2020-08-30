@@ -8,7 +8,7 @@ export default class UserEntity extends BasicEntity {
   @PrimaryGeneratedColumn({ type: 'int', comment: '사용자 계정' })
   id!: number
 
-  @Column({ type: 'int', nullable: false, comment: '이메일' })
+  @Column({ type: 'varchar', length: 200, nullable: true, comment: '이메일' })
   @Index()
   email!: string
 

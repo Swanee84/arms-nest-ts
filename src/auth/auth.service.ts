@@ -5,6 +5,7 @@ import { SECRET } from '../config'
 import { HttpException } from '@nestjs/common/exceptions/http.exception'
 import * as argon2 from 'argon2'
 import { SignLog } from '../user/signlog.entity'
+import { SignInLogModel } from '../common/logging.schema'
 
 @Injectable()
 export class AuthService {
@@ -16,14 +17,16 @@ export class AuthService {
   async signIn(email: string, password: string): Promise<IUser> {
     const user = await UserEntity.findOne({ email })
     if (!user) {
+      throw new HttpException({ status: 401, message: 'Email Not Found' }, 401)
       return null
     }
 
     if (await argon2.verify(user.password, password)) {
-      const signLog = new SignLog()
-      signLog.userId = user.id
-      signLog.save()
+      const signLog = new SignInLogModel({ userId: user.id })
+      await signLog.save()
       return user.getInterface()
+    } else {
+      throw new HttpException({ status: 401, message: 'Invalid Password' }, 401)
     }
 
     return null

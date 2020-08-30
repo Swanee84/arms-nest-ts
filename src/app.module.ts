@@ -9,10 +9,9 @@ import { BranchModule } from './branch/branch.module'
 import { AcademyService } from './academy/academy.service'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { CodeModule } from './code/code.module'
-import { MongooseModule } from '@nestjs/mongoose'
 
 @Module({
-  imports: [TypeOrmModule.forRoot(), MongooseModule.forRoot(`mongodb://${process.env.MONG}`), UserModule, AcademyModule, BranchModule, CodeModule],
+  imports: [TypeOrmModule.forRoot(), UserModule, AcademyModule, BranchModule, CodeModule],
   controllers: [AppController, AcademyController],
   providers: [AppService, AcademyService],
 })
