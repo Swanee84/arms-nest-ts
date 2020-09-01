@@ -13,19 +13,18 @@ export class AcademyService {
   //   private readonly academyRepository: Repository<AcademyEntity>
   // ) {}
 
-  async findAll(query: SearchAcademy): Promise<StandardResponse<AcademyEntity>> {
+  async findAll(query: SearchAcademy): Promise<AcademyEntity[]> {
     try {
       const dataList = await AcademyEntity.find({
         order: { id: 'ASC' },
       })
-      const response = new StandardResponse<AcademyEntity>({ dataList })
-      return Promise.resolve(response)
+      return dataList
     } catch (err) {
       throw err
     }
   }
 
-  async findOne(academyId: number): Promise<StandardResponse<AcademyEntity>> {
+  async findOne(academyId: number): Promise<AcademyEntity> {
     try {
       // const data: AcademyEntity = (await createQueryBuilder('academy')
       //   .leftJoinAndSelect('AcademyEntity.branchList', 'Branch')
@@ -36,8 +35,7 @@ export class AcademyService {
         where: { id: academyId },
         join: { alias: 'Academy', leftJoinAndSelect: { branch: 'Academy.branchList', user: 'Academy.user' } },
       })
-      const response = new StandardResponse<AcademyEntity>({ data })
-      return Promise.resolve(response)
+      return data
     } catch (err) {
       throw err
     }
@@ -53,17 +51,23 @@ export class AcademyService {
 
   async update(academyId: number, data: AcademyEntity): Promise<AcademyEntity> {
     const toUpdateData = await AcademyEntity.findOne({ id: academyId })
+    if (!toUpdateData) {
+      return null
+    }
     const updated = Object.assign(toUpdateData, data)
     const updatedData = await updated.save()
     console.log('updatedData >>', updatedData)
     return updatedData
   }
 
-  async delete(academyId: number): Promise<AcademyEntity> {
-    const data = new AcademyEntity()
-    data.id = academyId
-    data.status = Constant.DELETE
-    const deletedData = await data.save()
+  async delete(userId: number, academyId: number): Promise<AcademyEntity> {
+    const toDeleteData = await AcademyEntity.findOne({ id: academyId })
+    if (!toDeleteData) {
+      return null
+    }
+    toDeleteData.updatedId = userId
+    toDeleteData.status = Constant.DELETE
+    const deletedData = await toDeleteData.save()
     console.log('deletedData >>', deletedData)
     return deletedData
   }

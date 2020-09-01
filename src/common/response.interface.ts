@@ -1,11 +1,9 @@
-class BaseResponse {
+export class BaseResponse {
   message?: string
   status: number
   code?: string
   success: boolean
 
-  constructor()
-  constructor(_message?: string, _code?: string)
   constructor(_message?: string, _code?: string, _status?: number, _success?: boolean) {
     this.status = _status ?? 200
     this.success = _success ?? true

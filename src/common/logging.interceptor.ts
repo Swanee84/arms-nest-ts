@@ -17,7 +17,10 @@ mongoose
 export class LoggingInterceptor implements NestInterceptor {
   async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     const request = context.switchToHttp().getRequest()
-
+    const isAuthRequest = request.route.path === '/api/user/signIn' || request.route.path === '/api/user/tokenRefresh'
+    if (isAuthRequest) {
+      return next.handle()
+    }
     const method = request.method
     const url = request.route.path
     const params = request.params
@@ -25,7 +28,6 @@ export class LoggingInterceptor implements NestInterceptor {
     const query = request.query
 
     const logging = new LoggingModel({ method, url, params, body, query })
-    await logging.save()
 
     const now = Date.now()
     return next.handle().pipe(
@@ -41,10 +43,10 @@ export class LoggingInterceptor implements NestInterceptor {
         (e) => {
           console.log('interceptor E : ', e)
           logging.processTime = Date.now() - now
-          logging.status = e.status
+          logging.status = e.status ?? 500
           logging.success = false
           logging.message = e.message
-          if (e.status >= 500) {
+          if (logging.status >= 500) {
             logging.stack = e.stack
           }
           logging.save()

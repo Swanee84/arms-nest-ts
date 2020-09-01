@@ -65,7 +65,7 @@ export class AuthService {
       role: user.role,
     }
     try {
-      const token: string = sign(payload, SECRET, { expiresIn: 60 * 60 * 24 })
+      const token: string = sign(payload, SECRET, { expiresIn: 60 * 60 * 24 * 2 })
       console.log('generated token : ', token)
       return token
     } catch (e) {

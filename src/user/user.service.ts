@@ -40,17 +40,23 @@ export class UserService {
 
   async update(userId: number, data: UserEntity): Promise<UserEntity> {
     const toUpdateData = await UserEntity.findOne({ id: userId })
+    if (!toUpdateData) {
+      return null
+    }
     const updated = Object.assign(toUpdateData, data)
     const updatedData = await updated.save()
     console.log('updatedData >>', updatedData)
     return updatedData
   }
 
-  async delete(userId: number): Promise<UserEntity> {
-    const data = new UserEntity()
-    data.id = userId
-    data.status = Constant.DELETE
-    const deletedData = await data.save()
+  async delete(userId: number, searchUserId: number): Promise<UserEntity> {
+    const toDeleteData = await UserEntity.findOne({ id: searchUserId })
+    if (!toDeleteData) {
+      return null
+    }
+    toDeleteData.updatedId = userId
+    toDeleteData.status = Constant.DELETE
+    const deletedData = await toDeleteData.save()
     console.log('deletedData >>', deletedData)
     return deletedData
   }

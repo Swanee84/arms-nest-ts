@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Header, HttpException, Param, Patch, Post, Query, Req } from '@nestjs/common'
+import { Body, Controller, Delete, Get, Header, HttpException, Param, ParseIntPipe, Patch, Post, Query, Req } from '@nestjs/common'
 import { UserService } from './user.service'
 import UserEntity, { IUser, SearchUser } from './user.entity'
 import { StandardResponse } from '../common/response.interface'
@@ -36,8 +36,8 @@ export class UserController {
   }
 
   @Get(':id')
-  async findOne(@Param() params: SearchUser): Promise<StandardResponse<UserEntity>> {
-    return await this.userService.findOne(params.id)
+  async findOne(@Param('id', new ParseIntPipe()) userId: number): Promise<StandardResponse<UserEntity>> {
+    return await this.userService.findOne(userId)
   }
 
   @Post()
@@ -48,15 +48,19 @@ export class UserController {
   }
 
   @Patch(':id')
-  async update(@Auth({ key: 'id', roles: ['ADMIN'] }) userId: number, @Param() params: SearchUser, @Body() academyData: UserEntity): Promise<UserEntity> {
+  async update(
+    @Auth({ key: 'id', roles: ['ADMIN'] }) userId: number,
+    @Param('id', new ParseIntPipe()) searchUserId: number,
+    @Body() academyData: UserEntity
+  ): Promise<UserEntity> {
     academyData.updatedId = userId
-    const result = await this.userService.update(params.id, academyData)
+    const result = await this.userService.update(searchUserId, academyData)
     return Promise.resolve(result)
   }
 
   @Delete(':id')
-  async delete(@Param() params: SearchUser): Promise<UserEntity> {
-    const result = await this.userService.delete(params.id)
+  async delete(@Auth({ key: 'id', roles: ['ADMIN'] }) userId: number, @Param('id', new ParseIntPipe()) searchUserId: number): Promise<UserEntity> {
+    const result = await this.userService.delete(userId, searchUserId)
     return Promise.resolve(result)
   }
 }

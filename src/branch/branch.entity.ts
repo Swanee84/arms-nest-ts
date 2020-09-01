@@ -35,7 +35,7 @@ export default class BranchEntity extends BasicEntity {
   @JoinColumn({ name: 'academy_id' })
   academy!: AcademyEntity
 
-  @OneToOne((type) => UserEntity)
+  @ManyToOne((type) => UserEntity)
   @JoinColumn({ name: 'user_id' })
   user!: UserEntity
 }
