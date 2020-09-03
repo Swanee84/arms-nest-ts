@@ -4,6 +4,7 @@ import AcademyEntity, { SearchAcademy } from './academy.entity'
 import { BaseResponse, StandardResponse } from '../common/response.interface'
 import Auth from '../auth/auth.decorator'
 import BranchEntity from '../branch/branch.entity'
+import { Constant, Message } from '../common/constant'
 
 @Controller('academy')
 export class AcademyController {
@@ -39,14 +40,14 @@ export class AcademyController {
   ): Promise<BaseResponse> {
     academyData.updatedId = userId
     const data = await this.academyService.update(academyId, academyData)
-    const response = data ? new StandardResponse<AcademyEntity>({ data }) : new BaseResponse('수정할 데이터 없음', 'ACADEMY_UPD', 405, false)
+    const response = data ? new StandardResponse<AcademyEntity>({ data }) : new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false)
     return Promise.resolve(response)
   }
 
   @Delete(':id')
   async delete(@Auth({ key: 'id', roles: ['ADMIN'] }) userId: number, @Param('id', new ParseIntPipe()) academyId: number): Promise<BaseResponse> {
     const data = await this.academyService.delete(userId, academyId)
-    const response = data ? new StandardResponse<AcademyEntity>({ data }) : new BaseResponse('삭제할 데이터 없음', 'ACADEMY_DEL', 405, false)
+    const response = data ? new StandardResponse<AcademyEntity>({ data }) : new BaseResponse(Message.NOT_DELETE_DATA, Constant.DELETE_NOT_FOUND, 405, false)
     return Promise.resolve(response)
   }
 }

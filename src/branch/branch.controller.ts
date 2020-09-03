@@ -3,6 +3,7 @@ import { BranchService } from './branch.service'
 import BranchEntity, { SearchBranch } from '../branch/branch.entity'
 import { BaseResponse, StandardResponse } from '../common/response.interface'
 import Auth from '../auth/auth.decorator'
+import { Constant, Message } from '../common/constant'
 
 @Controller('branch')
 export class BranchController {
@@ -38,14 +39,14 @@ export class BranchController {
   ): Promise<BaseResponse> {
     branchData.updatedId = userId
     const data = await this.branchService.update(branchId, branchData)
-    const response = data ? new StandardResponse<BranchEntity>({ data }) : new BaseResponse('수정할 데이터 없음', 'BRANCH_UPD', 405, false)
+    const response = data ? new StandardResponse<BranchEntity>({ data }) : new BaseResponse(Message.NOT_UPDATE_DATA, Constant.UPDATE_NOT_FOUND, 405, false)
     return Promise.resolve(response)
   }
 
   @Delete(':id')
   async delete(@Auth({ key: 'id', roles: ['ADMIN'] }) userId: number, @Param('id', new ParseIntPipe()) branchId: number): Promise<BaseResponse> {
     const data = await this.branchService.delete(userId, branchId)
-    const response = data ? new StandardResponse<BranchEntity>({ data }) : new BaseResponse('삭제할 데이터 없음', 'BRANCH_DEL', 405, false)
+    const response = data ? new StandardResponse<BranchEntity>({ data }) : new BaseResponse(Message.NOT_DELETE_DATA, Constant.DELETE_NOT_FOUND, 405, false)
     return Promise.resolve(response)
   }
 }

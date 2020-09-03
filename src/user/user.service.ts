@@ -7,7 +7,7 @@ import { SearchUser } from './user.entity'
 
 @Injectable()
 export class UserService {
-  async findAll(query: SearchUser): Promise<StandardResponse<UserEntity>> {
+  async findAll(query: SearchUser): Promise<UserEntity[]> {
     try {
       // const dataList: UserEntity[] = (await createQueryBuilder('academy')
       //   .leftJoinAndSelect('UserEntity.branchList', 'Branch')
@@ -15,18 +15,16 @@ export class UserService {
       //   .where(query)
       //   .getMany()) as UserEntity[]
       const dataList = await UserEntity.find()
-      const response = new StandardResponse<UserEntity>({ dataList })
-      return Promise.resolve(response)
+      return dataList
     } catch (err) {
       throw err
     }
   }
 
-  async findOne(userId: number): Promise<StandardResponse<UserEntity>> {
+  async findOne(userId: number): Promise<UserEntity> {
     try {
       const data: UserEntity = await UserEntity.findOne({ id: userId })
-      const response = new StandardResponse<UserEntity>({ data })
-      return Promise.resolve(response)
+      return data
     } catch (err) {
       throw err
     }
